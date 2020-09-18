@@ -14,17 +14,17 @@ Option Explicit
 Dim a, b As Range
 Dim i, j, k, count, countUnique, tickerIterator, volumeTracker As Long
 Dim temp, testTicker As String
-Dim ticker(), startValue(), endValue(), totalVolumn() As String
+Dim ticker() As String
+Dim startValue(), endValue(), totalVolumn() As Double
+Dim ws As Worksheet
 
 Sub Main()
 
-' Check to see if the sheet exists already; a safety net in case someone has already run
-' the macro in a workbook
-If WkshtCheck(title:="Results") = "False" Then
-    Sheets.Add(Before:=Sheets(1)).Name = "Results"
-End If
-
-Call Work
+For Each ws In Worksheets
+    ws.Activate
+    Call SetHeaders
+    Call Work
+Next
 
 End Sub
 
@@ -56,25 +56,11 @@ ReDim startValue(countUnique)
 ReDim endValue(countUnique)
 ReDim totalVolume(countUnique)
 
-' Loop down the first column to fill our arrays
-
-' Step 1 - Find the current row's ticker, startValue, totalVolume and write to array
-
-' Step 2 - Check next row down to see if the ticker is the same as the current row
-
-' Step 3 - If next row is same, add total volume and loop
-'        - If next row is different, add total volume, write endValue to array
-'        - Iterate tickerIterator and loop
-
-' Things we need:
-'   - count of total rows
-'   - count of unique rows
-'   -
-
 ' Initialize the dummy variables
 testTicker = ""
 tickerIterator = 0
 
+' Loop down the first column to fill our arrays
 For i = 2 To count
     If i = 2 Then
         ticker(tickerIterator) = Cells(i, 1).Value
@@ -96,49 +82,28 @@ For i = 2 To count
     End If
 Next
 Done:
-' Print everything out the respective cells
+
+' Print everything out to the appropriate cells
+Call PrintOut(ticker, startValue, endValue, totalVolume)
+
+End Sub
+
+Sub PrintOut(ticker, startValue, endValue, totalVolume)
+
 For i = 1 To countUnique
     Cells(i + 1, 9) = ticker(i - 1)
-    Cells(i + 1, 10) = startValue(i - 1)
-    Cells(i + 1, 11) = endValue(i - 1)
-    Cells(i + 1, 12) = startValue(i - 1) - endValue(i - 1)
-    Cells(i + 1, 13) = totalVolume(i - 1)
+    Cells(i + 1, 10) = endValue(i - 1) - startValue(i - 1)
+    Cells(i + 1, 11) = 100 * ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
+    Cells(i + 1, 12) = totalVolume(i - 1)
 Next
 
 End Sub
 
-Function WkshtCheck(title As String)
-' This function is used to check if the Results sheet has already been added to make sure
-' we don't get an error when adding a new sheet. Probably not going to use this.
-    Dim ws As Worksheet
-    For Each ws In ThisWorkbook.Worksheets
-        If ws.Name = title Then
-            WkshtCheck = "True"
-            Exit For
-        Else
-            WkshtCheck = "False"
-        End If
-    Next
-End Function
+Sub SetHeaders()
 
-Sub Old()
-
-For i = 2 To count
-    If Cells(i, 1) <> testTicker Then
-        ticker(tickerIterator) = Cells(i, 1)
-        startValue(tickerIterator) = Cells(i, 3)
-        testTicker = Cells(i, 1)
-        volumeTracker = volumeTracker + Cells(i, 7)
-        ' Set to the next ticker iterator to indicate
-        tickerIterator = tickerIterator + 1
-    End If
-    
-    If Cells(i + 1, 1) <> testTicker Then
-        endValue(tickerIterator - 1) = Cells(i, 6)
-        totalVolume(tickerIterator - 1) = volumeTracker + Cells(i, 7)
-        volumeTracker = 0
-    End If
-Next
-
+Cells(1, 9).Value = "Ticker"
+Cells(1, 10).Value = "Yearly Change"
+Cells(1, 11).Value = "Percent Change"
+Cells(1, 12).Value = "Total Stock Volume"
 
 End Sub
