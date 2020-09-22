@@ -12,10 +12,10 @@ Option Explicit
 ' testTicker = used for ticker comparison
 
 Dim a, b As Range
-Dim i, j, k, count, countUnique, tickerIterator, volumeTracker As Long
+Dim i, j, k, count, countUnique, tickerIterator, volumeTracker, greatVolumeLoc As Long
 Dim temp, testTicker As String
 Dim ticker() As String
-Dim startValue(), endValue(), totalVolumn() As Double
+Dim startValue(), endValue(), totalVolume(), greatVolume As Double
 Dim ws As Worksheet
 
 Sub Main()
@@ -84,6 +84,21 @@ Sub Work()
         End If
     Next
 Done:
+
+    greatVolume = 0
+    
+    For i = 1 To tickerIterator
+        If totalVolume(i) > greatVolume Then
+            greatVolume = totalVolume(i)
+            greatVolumeLoc = i
+        End If
+    Next
+    
+'    For i = LBound(totalVolume) To UBound(totalVolume)
+'        If totalVolume(i) > greatVolume Then
+'            greatVolume = totalVolume(i)
+'        End If
+'    Next i
     
     ' Print everything out to the appropriate cells
     Call PrintOut(ticker, startValue, endValue, totalVolume)
@@ -102,6 +117,9 @@ Sub PrintOut(ticker, startValue, endValue, totalVolume)
         End If
         Cells(i + 1, 12) = totalVolume(i - 1)
     Next
+    
+    Cells(4, 16).Value = ticker(greatVolumeLoc)
+    Cells(4, 17).Value = greatVolume
 
 End Sub
 
@@ -111,13 +129,18 @@ Sub SetHeaders()
     Cells(1, 10).Value = "Yearly Change"
     Cells(1, 11).Value = "Percent Change"
     Cells(1, 12).Value = "Total Stock Volume"
+    Cells(1, 16).Value = "Ticker"
+    Cells(1, 17).Value = "Value"
+    Cells(2, 15).Value = "Greatest % Increase"
+    Cells(3, 15).Value = "Greatest % Decrease"
+    Cells(4, 15).Value = "Greatest Total Volume"
 
 End Sub
 
 Sub Formatting()
 
     ' Autofit the column widths for the columns we added
-    Columns("I:L").Select
+    Columns("I:Q").Select
     Selection.Columns.AutoFit
     
     ' Use conditional formatting to format positive values as green and negative values as red
@@ -149,6 +172,10 @@ Sub Formatting()
     Selection.NumberFormat = "0.00%"
     ' Format Total Stock Volume with commas and no decimal places
     Range("L2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Style = "Comma"
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)"
+    Range("Q2").Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Style = "Comma"
     Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)"
