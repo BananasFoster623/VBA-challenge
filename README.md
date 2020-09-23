@@ -12,6 +12,7 @@ There were additional, optional data points that were requested. They are:
 # Summary of Deliverables
 This repository contains the following:
 - The Visual Basic Script (.vbs) file containing the VBA code used for the analysis
+- The BASIC (.bas) file to ease import to Excel, if desired
 - Screenshots of the resulting Excel Worksheets verifying the code executed correctly
 - This detailed readme file
 
