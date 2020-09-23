@@ -15,7 +15,7 @@ Dim a, b As Range
 Dim i, j, k, count, countUnique, tickerIterator, volumeTracker, greatVolumeLoc As Long
 Dim temp, testTicker As String
 Dim ticker() As String
-Dim startValue(), endValue(), totalVolume(), greatVolume As Double
+Dim startValue(), endValue(), totalVolume(), yearChange(), percChange(), greatVolume, greatInc, greatDec As Double
 Dim ws As Worksheet
 
 Sub Main()
@@ -57,6 +57,8 @@ Sub Work()
     ReDim startValue(countUnique)
     ReDim endValue(countUnique)
     ReDim totalVolume(countUnique)
+    ReDim yearChange(countUnique)
+    ReDim percChange(countUnique)
     
     ' Initialize the dummy variables
     testTicker = ""
@@ -71,6 +73,7 @@ Sub Work()
         ElseIf Cells(i + 1, 1).Value = "" Then
             endValue(tickerIterator) = Cells(i, 6).Value
             totalVolume(tickerIterator) = totalVolume(tickerIterator) + Cells(i, 7).Value
+            tickerIterator = tickerIterator + 1
             GoTo Done
         ElseIf Cells(i, 1).Value = Cells(i + 1, 1).Value Then
             totalVolume(tickerIterator) = totalVolume(tickerIterator) + Cells(i, 7).Value
@@ -87,20 +90,20 @@ Sub Work()
     Next
 Done:
 
+    For i = 1 To countUnique
+        yearChange(i - 1) = endValue(i - 1) - startValue(i - 1)
+        percChange(i - 1) = ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
+    Next
+
     greatVolume = 0
-    
-    For i = 1 To tickerIterator
+    greatInc = 0
+    greatDec = 0
+    For i = 0 To tickerIterator - 1
         If totalVolume(i) > greatVolume Then
             greatVolume = totalVolume(i)
             greatVolumeLoc = i
         End If
     Next
-    
-'    For i = LBound(totalVolume) To UBound(totalVolume)
-'        If totalVolume(i) > greatVolume Then
-'            greatVolume = totalVolume(i)
-'        End If
-'    Next i
     
     ' Print everything out to the appropriate cells
     Call PrintOut(ticker, startValue, endValue, totalVolume)
@@ -113,7 +116,7 @@ Sub PrintOut(ticker, startValue, endValue, totalVolume)
         Cells(i + 1, 9) = ticker(i - 1)
         Cells(i + 1, 10) = endValue(i - 1) - startValue(i - 1)
         If startValue(i - 1) = 0 Then
-            Cells(i + 1, 11) = "NaN"
+            Cells(i + 1, 11) = 0
         Else
             Cells(i + 1, 11) = ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
         End If
