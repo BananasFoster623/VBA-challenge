@@ -17,11 +17,11 @@ This repository contains the following:
 
 # Code Description
 The VBA code contains five (5) sub procedures named (listed in order they are called):
-- Main
-- SetHeaders
-- Work
-- PrintOut
-- Formatting
+- Main()
+- SetHeaders()
+- Work()
+- PrintOut()
+- Formatting()
 
 Variables were declared at the module level, outside of any sub procedures. 
   
@@ -35,4 +35,14 @@ This sub procedure simply sets the column headers for the desired outputs, which
 This is the sub procedure that does all of the data manipulation and calculations. In order of execution, the commands can be summarized as follows:
 1. Finds the length of the dataset on the active worksheet
 2. Finds the number of unique ticker symbols (column 1) for use in loops
-3. Redim
+3. Redimension the dynamic arrays that were used to store the following for each stock:
+    - Unique Ticker Symbol
+    - Opening Values (i.e Start Values)
+    - Closing Values (i.e. End Values)
+    - Total Volume Traded
+    - Annual Change (i.e. Yearly Change)
+    - Annual Percent Change (i.e. Percent Change)
+4. Loop down the dataset for the active workbook. 
+5. Calculate the Yearly Change and Percent Change for each stock. 
+6. Calculate the Greatest % Increase, Greatest % Decrease, and Greatest Total Volume. 
+7. Call the PrintOut() sub procedure to output results. 
