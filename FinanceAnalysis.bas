@@ -15,7 +15,7 @@ Dim a, b As Range
 Dim i, j, k, count, countUnique, tickerIterator, volumeTracker, greatVolumeLoc As Long
 Dim temp, testTicker As String
 Dim ticker() As String
-Dim startValue(), endValue(), totalVolume(), greatVolume As Double
+Dim startValue(), endValue(), totalVolume(), greatVolume, greatInc, greatDec As Double
 Dim ws As Worksheet
 
 Sub Main()
@@ -69,6 +69,8 @@ Sub Work()
             startValue(tickerIterator) = Cells(i, 3).Value
             totalVolume(tickerIterator) = Cells(i, 7).Value
         ElseIf Cells(i + 1, 1).Value = "" Then
+            endValue(tickerIterator) = Cells(i, 6).Value
+            totalVolume(tickerIterator) = totalVolume(tickerIterator) + Cells(i, 7).Value
             GoTo Done
         ElseIf Cells(i, 1).Value = Cells(i + 1, 1).Value Then
             totalVolume(tickerIterator) = totalVolume(tickerIterator) + Cells(i, 7).Value
@@ -82,25 +84,22 @@ Sub Work()
         Else
             MsgBox ("Uh oh...something went wrong....")
         End If
+Continue:
     Next
 Done:
 
     greatVolume = 0
+    greatInc = 0
+    greatDec = 0
     
-    For i = 1 To tickerIterator
+    For i = 0 To tickerIterator
         If totalVolume(i) > greatVolume Then
             greatVolume = totalVolume(i)
             greatVolumeLoc = i
         End If
+
     Next
     
-'    For i = LBound(totalVolume) To UBound(totalVolume)
-'        If totalVolume(i) > greatVolume Then
-'            greatVolume = totalVolume(i)
-'        End If
-'    Next i
-    
-    ' Print everything out to the appropriate cells
     Call PrintOut(ticker, startValue, endValue, totalVolume)
 
 End Sub
@@ -111,7 +110,7 @@ Sub PrintOut(ticker, startValue, endValue, totalVolume)
         Cells(i + 1, 9) = ticker(i - 1)
         Cells(i + 1, 10) = endValue(i - 1) - startValue(i - 1)
         If startValue(i - 1) = 0 Then
-            Cells(i + 1, 11) = "NaN"
+            Cells(i + 1, 11) = 0
         Else
             Cells(i + 1, 11) = ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
         End If
@@ -175,8 +174,7 @@ Sub Formatting()
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Style = "Comma"
     Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)"
-    Range("Q2").Select
-    Range(Selection, Selection.End(xlDown)).Select
+    Range("Q4").Select
     Selection.Style = "Comma"
     Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)"
     
