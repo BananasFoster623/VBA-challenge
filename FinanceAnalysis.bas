@@ -12,7 +12,7 @@ Option Explicit
 ' testTicker = used for ticker comparison
 
 Dim a, b As Range
-Dim i, j, k, count, countUnique, tickerIterator, volumeTracker, greatVolumeLoc As Long
+Dim i, j, k, count, countUnique, tickerIterator, volumeTracker, greatIncLoc, greatDecLoc, greatVolumeLoc As Long
 Dim temp, testTicker As String
 Dim ticker() As String
 Dim startValue(), endValue(), totalVolume(), yearChange(), percChange(), greatVolume, greatInc, greatDec As Double
@@ -111,6 +111,14 @@ Done:
             greatVolume = totalVolume(i)
             greatVolumeLoc = i
         End If
+        If percChange(i) > greatInc Then
+            greatInc = percChange(i)
+            greatIncLoc = i
+        End If
+        If percChange(i) < greatDec Then
+            greatDec = percChange(i)
+            greatDecLoc = i
+        End If
     Next
     
     ' Print everything out to the appropriate cells
@@ -126,7 +134,11 @@ Sub PrintOut(ticker, startValue, endValue, totalVolume)
         Cells(i + 1, 11) = percChange(i - 1)
         Cells(i + 1, 12) = totalVolume(i - 1)
     Next
-    
+
+    Cells(2, 16).Value = ticker(greatIncLoc)
+    Cells(2, 17).Value = greatInc
+    Cells(3, 16).Value = ticker(greatDecLoc)
+    Cells(3, 17).Value = greatDec
     Cells(4, 16).Value = ticker(greatVolumeLoc)
     Cells(4, 17).Value = greatVolume
 
@@ -177,6 +189,9 @@ Sub Formatting()
     ' Format percent change as a percentage with 2 decimal places
     Range("K2").Select
     Range(Selection, Selection.End(xlDown)).Select
+    Selection.Style = "Percent"
+    Selection.NumberFormat = "0.00%"
+    Range("Q2:Q3").Select
     Selection.Style = "Percent"
     Selection.NumberFormat = "0.00%"
     ' Format Total Stock Volume with commas and no decimal places
