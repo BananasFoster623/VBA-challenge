@@ -76,6 +76,10 @@ Sub Work()
             tickerIterator = tickerIterator + 1
             GoTo Done
         ElseIf Cells(i, 1).Value = Cells(i + 1, 1).Value Then
+            ' This is where the nested if loop needs to be for the start value search
+            If Cells(i, 3).Value = 0 Then
+                startValue(tickerIterator) = Cells(i + 1, 3).Value
+            End If
             totalVolume(tickerIterator) = totalVolume(tickerIterator) + Cells(i, 7).Value
         ElseIf Cells(i, 1).Value <> Cells(i + 1, 1).Value Then
             endValue(tickerIterator) = Cells(i, 6).Value
@@ -92,7 +96,11 @@ Done:
 
     For i = 1 To countUnique
         yearChange(i - 1) = endValue(i - 1) - startValue(i - 1)
-        percChange(i - 1) = ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
+        If startValue(i - 1) <> 0 Then
+            percChange(i - 1) = ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
+        Else
+            percChange(i - 1) = 0
+        End If
     Next
 
     greatVolume = 0
@@ -114,12 +122,8 @@ Sub PrintOut(ticker, startValue, endValue, totalVolume)
 
     For i = 1 To countUnique
         Cells(i + 1, 9) = ticker(i - 1)
-        Cells(i + 1, 10) = endValue(i - 1) - startValue(i - 1)
-        If startValue(i - 1) = 0 Then
-            Cells(i + 1, 11) = 0
-        Else
-            Cells(i + 1, 11) = ((endValue(i - 1) - startValue(i - 1)) / startValue(i - 1))
-        End If
+        Cells(i + 1, 10) = yearChange(i - 1)
+        Cells(i + 1, 11) = percChange(i - 1)
         Cells(i + 1, 12) = totalVolume(i - 1)
     Next
     
