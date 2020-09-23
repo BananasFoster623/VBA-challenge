@@ -45,4 +45,10 @@ This is the sub procedure that does all of the data manipulation and calculation
 4. Loop down the dataset for the active workbook. 
 5. Calculate the Yearly Change and Percent Change for each stock. 
 6. Calculate the Greatest % Increase, Greatest % Decrease, and Greatest Total Volume. 
-7. Call the PrintOut() sub procedure to output results. 
+7. Call the PrintOut() sub procedure to output results.
+
+### PrintOut
+This sub procedure was used to print all results out to the active worksheet after calculations were done. I chose to do all the calculations first, and then print out to keep the calculation loops less cluttered. It also helps with debugging as you can run calculations without waiting on Excel to write to sheet each loop, which slows the execution time down. 
+
+### Formatting
+This sub procedure autofits all output columns, applies the conditional formatting defined in the problem statement, and mirrors the number formatting to the example in the problem statement. 
